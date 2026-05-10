@@ -67,9 +67,70 @@ const login = async (req, res) => {
     }
 };
 
+const register = async (req, res) => {
+  try {
+    const { name, email, studentId, password } = req.body;
+
+    const user = await authService.handleRegister(
+      name,
+      email,
+      studentId,
+      password
+    );
+
+    return res.status(201).json({
+      success: true,
+      message: 'Đăng ký tài khoản thành công! Vui lòng kiểm tra email để nhập OTP kích hoạt tài khoản.',
+      data: user
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+const verifyRegisterOtp = async (req, res) => {
+  try {
+    const { email, otp } = req.body;
+
+    const user = await authService.handleVerifyRegisterOtp(email, otp);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Xác thực email thành công!',
+      data: user
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
+const resendRegisterOtp = async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    await authService.handleResendRegisterOtp(email);
+
+    return res.status(200).json({
+      success: true,
+      message: 'Mã OTP kích hoạt tài khoản đã được gửi lại qua email!'
+    });
+  } catch (error) {
+    return res.status(400).json({
+      success: false,
+      message: error.message
+    });
+  }
+};
 // Export tất cả các hàm
 module.exports = {
     forgotPassword,
     resetPassword,
-    login
+    login,
+    register,
+    verifyRegisterOtp,
+    resendRegisterOtp
 };
